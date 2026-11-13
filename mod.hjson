@@ -1,0 +1,8 @@
+displayName: "Drone Station"
+name: "DroneStation"
+author: "Бодян"
+main: "example.ExampleJavaMod"
+description: "Крутой мод, он дает возможность нанимать дронов которые летают с игроком"
+version: "1.2"
+minGameVersion: "157.3"
+java: true
