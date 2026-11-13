@@ -21,6 +21,10 @@ jobs:
       with:
         packages: 'build-tools;34.0.0 platforms;android-33'
 
+    - name: Create local.properties for Android SDK
+      run: |
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+
     - name: Build mod jar
       run: |
         chmod +x ./gradlew
