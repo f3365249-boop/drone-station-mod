@@ -16,31 +16,17 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Pure Script Android SDK Setup
+    - name: Build Mindustry Mod for Android & PC
       run: |
-        export ANDROID_HOME=$HOME/android-sdk
-        mkdir -p $ANDROID_HOME/cmdline-tools
-        
-        echo "Downloading Android command-line tools..."
-        curl -s https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o commandlinetools.zip
-        unzip -q commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
-        mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-        rm commandlinetools.zip
-
-        # Принимаем лицензии и ставим нужные компоненты
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
-        yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
-        sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "build-tools;34.0.0" "platforms;android-33"
-
-        # Создаем local.properties для Gradle
+        export ANDROID_HOME=$ANDROID_SDK_ROOT
         echo "sdk.dir=$ANDROID_HOME" > local.properties
         
-        # Добавляем d8 в PATH
-        BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | head -n 1)
-        echo "$BUILD_TOOLS_DIR" >> $GITHUB_PATH
+        # Автоматическое принятие лицензий встроенного SDK
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        
+        # Установка необходимых компонентов сборки
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" "platforms;android-33" || true
 
-    - name: Build mod jar
-      run: |
         chmod +x ./gradlew
         ./gradlew deploy
 
