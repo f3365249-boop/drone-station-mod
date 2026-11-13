@@ -16,18 +16,18 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Install Android SDK & Build Tools
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        packages: 'platforms;android-33 build-tools;34.0.0'
+
+    - name: Configure SDK and add d8 to PATH
       run: |
-        ANDROID_SDK_ROOT=$HOME/android-sdk
-        mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-        curl -s https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o commandlinetools.zip
-        unzip -q commandlinetools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
-        mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
-        rm commandlinetools.zip
-        
-        yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "build-tools;34.0.0" "platforms;android-33"
-        
-        echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+        # Находим путь к build-tools и добавляем в PATH для доступа к d8
+        BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | head -n 1)
+        echo "$BUILD_TOOLS_DIR" >> $GITHUB_PATH
+        echo "Added to PATH: $BUILD_TOOLS_DIR"
 
     - name: Build mod jar
       run: |
